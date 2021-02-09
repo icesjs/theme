@@ -4,6 +4,7 @@
     "lib": ["esnext", "dom"],
     "module": "esnext",
     "moduleResolution": "node",
+    "importHelpers": false,
     "strict": true,
     "alwaysStrict": true,
     "allowJs": false,
