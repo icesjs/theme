@@ -1,39 +1,27 @@
 // theme模块由构建插件生成
 import themes from './theme'
-import ThemeEventManager from './event'
+import ThemeEventManager, { ThemeLoadError } from './event'
 
 export interface Theme {
-  name: string
-  activated: boolean
-  activate: () => Promise<any>
+  readonly name: string
+  readonly activated: boolean
+  readonly activate: () => Promise<string>
 }
 
 class ThemeManager extends ThemeEventManager {
   get theme() {
-    return this.getCurrentTheme()
+    const theme = themes.filter((theme) => theme.activated)[0]
+    return theme ? theme.name : ''
   }
 
   set theme(name: string) {
-    this.changeTheme(name).then(() => {})
+    this.changeTheme(name).catch((err) => {
+      throw err
+    })
   }
 
   get themeList() {
-    return this.getThemeList()
-  }
-
-  /**
-   * 获取已注册的主题名称列表
-   */
-  getThemeList() {
     return themes.map((theme) => theme.name)
-  }
-
-  /**
-   * 获取当前激活的主题名称
-   */
-  getCurrentTheme() {
-    const theme = themes.filter((theme) => theme.activated)[0]
-    return theme ? theme.name : ''
   }
 
   /**
@@ -41,34 +29,21 @@ class ThemeManager extends ThemeEventManager {
    * @param name 主题名
    */
   changeTheme(name: string) {
-    const theme = themes.filter((theme) => theme.name === name)[0]
-    if (!theme) {
-      return Promise.reject(new Error(`Unknown theme name: ${name}`))
+    let theme: Theme | undefined
+    if (!name || !(theme = themes.filter((theme) => theme.name === name)[0])) {
+      return Promise.reject(new Error(`Unknown theme name '${name}'`))
     }
-    if (theme.activated) {
+    const prevThemeName = this.theme
+    if (prevThemeName === theme.name) {
       return Promise.resolve(name)
     }
     return theme
       .activate()
       .then(() => {
-        let prev = ''
-        themes.forEach((theme) => {
-          if (theme.activated) {
-            prev = theme.name
-            theme.activated = false
-          }
-        })
-        theme.activated = true
-        this._dispatchEvent({
-          type: 'change',
-          data: {
-            current: name,
-            previous: prev,
-          },
-        })
+        this._dispatchEvent({ type: 'change', data: { current: name, previous: prevThemeName } })
         return name
       })
-      .catch((error) => {
+      .catch((error: ThemeLoadError) => {
         error.theme = name
         this._dispatchEvent({ type: 'error', data: error })
         throw error

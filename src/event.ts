@@ -2,7 +2,11 @@
 export type ThemeEventName = 'error' | 'change'
 export interface ThemeLoadError extends Error {
   theme: string
+  request: string
+  code: string
+  type: string
 }
+
 export interface ThemeEvent {
   type: ThemeEventName
   data: { current: string; previous: string } | ThemeLoadError
