@@ -2,6 +2,15 @@
 import themes from './theme'
 import ThemeEventManager, { ThemeLoadError } from './event'
 
+export {
+  ThemeErrorEvent,
+  ThemeChangeEvent,
+  ThemeErrorEventListener,
+  ThemeChangeEventListener,
+  ThemeEventListener,
+  ThemeLoadError,
+} from './event'
+
 export interface Theme {
   readonly name: string
   readonly activated: boolean
