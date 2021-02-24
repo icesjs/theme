@@ -5,9 +5,9 @@ import ThemeEventManager, { ThemeLoadError } from './event'
 export {
   ThemeErrorEvent,
   ThemeChangeEvent,
-  ThemeErrorEventListener,
-  ThemeChangeEventListener,
-  ThemeEventListener,
+  ThemeErrorEventHandler,
+  ThemeChangeEventHandler,
+  ThemeEventHandler,
   ThemeLoadError,
 } from './event'
 
