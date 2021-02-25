@@ -16,6 +16,8 @@
 # production
 /dist
 /lib
+/react
+/vue
 
 # misc
 .DS_Store

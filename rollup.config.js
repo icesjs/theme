@@ -40,6 +40,15 @@ throw new Error(
 
 function makeTypesFile() {
   cp.execSync('yarn types', { stdio: 'ignore' })
+  const paths = ['types/react', 'types/vue']
+  for (const p of paths) {
+    const dir = path.resolve(p)
+    if (fs.existsSync(dir)) {
+      for (const dts of fs.readdirSync(dir)) {
+        fs.renameSync(path.join(dir, dts), path.join(path.resolve(p.replace(/^types\//, '')), dts))
+      }
+    }
+  }
 }
 
 function getPlugins(format, makeTypes) {
@@ -80,6 +89,39 @@ export default [
     external: ['./theme'],
     output: {
       file: pkg.main,
+      exports: 'auto',
+      format: 'cjs',
+      sourcemap,
+    },
+    plugins: getPlugins('cjs'),
+  },
+  {
+    input: 'src/react/index.tsx',
+    external: ['../index'],
+    output: {
+      file: 'react/index.js',
+      paths: (id) => {
+        if (id === path.resolve('src/index')) {
+          return path.relative(path.resolve('react'), path.resolve(pkg.module)).replace(/\\/g, '/')
+        }
+        return id
+      },
+      format: 'es',
+      sourcemap,
+    },
+    plugins: getPlugins('es'),
+  },
+  {
+    input: 'src/react/index.tsx',
+    external: ['../index'],
+    output: {
+      file: 'react/index.cjs.js',
+      paths: (id) => {
+        if (id === path.resolve('src/index')) {
+          return path.relative(path.resolve('react'), path.resolve(pkg.main)).replace(/\\/g, '/')
+        }
+        return id
+      },
       exports: 'auto',
       format: 'cjs',
       sourcemap,

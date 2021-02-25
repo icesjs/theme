@@ -12,7 +12,8 @@
     "allowSyntheticDefaultImports": true,
     "newLine": "lf",
     "sourceMap": true,
-    "inlineSources": true
+    "inlineSources": true,
+    "jsx": "react"
   },
   "include": ["src"]
 }
