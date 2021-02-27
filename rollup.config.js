@@ -62,7 +62,7 @@ function getPlugins(format, makeTypes) {
     typescript({
       removeComments: true,
       noUnusedLocals: !isEnvDevelopment,
-      target: 'es2015',
+      target: 'es5',
     }),
     makeTypes && {
       name: 'make-types',
