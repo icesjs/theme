@@ -19,6 +19,7 @@ function useTheme(initialTheme?: string | ((themes: readonly string[]) => string
     return currentTheme
   })
   useEffect(() => {
+    setTheme(themeManager.theme)
     return themeManager.subscribe('change', ({ data: { current } }) => setTheme(current))
   })
   return [theme, themeList, changeTheme] as readonly [string, typeof themeList, typeof changeTheme]
