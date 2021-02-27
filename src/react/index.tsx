@@ -1,34 +1,49 @@
 import * as React from 'react'
-import { FC, useEffect, useState } from 'react'
+import { FC, useEffect, useMemo, useState } from 'react'
 import themeManager from '../index'
 
 const changeTheme = themeManager.changeTheme.bind(themeManager)
 
 const themeList: readonly string[] = themeManager.themeList
 
-function useTheme(initialTheme?: string | ((themes: string[]) => string)) {
+function useTheme(initialTheme?: string | ((themes: readonly string[]) => string)) {
   const [theme, setTheme] = useState(() => {
-    let state = typeof initialTheme === 'function' ? initialTheme([...themeList]) : initialTheme
-    if (typeof state === 'string' && themeList.some((theme) => state === theme)) {
-      themeManager.theme = state
-    } else {
-      state = themeManager.theme
+    const currentTheme = themeManager.theme
+    let defaultTheme = typeof initialTheme === 'function' ? initialTheme(themeList) : initialTheme
+    if (typeof defaultTheme !== 'string' || !themeList.some((theme) => theme === defaultTheme)) {
+      defaultTheme = currentTheme
     }
-    return state
+    if (defaultTheme !== currentTheme) {
+      themeManager.changeTheme(defaultTheme).then((theme) => setTheme(theme))
+    }
+    return currentTheme
   })
   useEffect(() => {
     return themeManager.subscribe('change', ({ data: { current } }) => setTheme(current))
   })
-  return [theme, changeTheme] as readonly [string, typeof changeTheme]
+  return [theme, themeList, changeTheme] as readonly [string, typeof themeList, typeof changeTheme]
 }
 
-const ThemeContext = React.createContext(themeManager.theme)
+const ThemeContext = React.createContext({
+  theme: themeManager.theme,
+  themeList,
+  changeTheme,
+})
 
-const ThemeProvider: FC = function (props) {
-  const [theme] = useTheme()
-  return <ThemeContext.Provider value={theme}>{props.children}</ThemeContext.Provider>
+type ThemeProviderProps = {
+  default?: string | ((themes: readonly string[]) => string)
+}
+
+const ThemeProvider: FC<ThemeProviderProps> = function (props) {
+  const [theme, themeList, changeTheme] = useTheme(props.default)
+  const context = useMemo(() => ({ theme, themeList, changeTheme }), [
+    theme,
+    themeList,
+    changeTheme,
+  ])
+  return <ThemeContext.Provider value={context}>{props.children}</ThemeContext.Provider>
 }
 
 const ThemeConsumer = ThemeContext.Consumer
 
-export { useTheme, themeList, ThemeContext, ThemeProvider, ThemeConsumer }
+export { useTheme, ThemeContext, ThemeConsumer, ThemeProvider, ThemeProviderProps }

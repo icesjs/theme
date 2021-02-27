@@ -18,24 +18,34 @@ export interface Theme {
 }
 
 class ThemeManager extends ThemeEventManager {
+  /**
+   * 获取当前已激活的主题名称。
+   */
   get theme() {
     const theme = themes.filter((theme) => theme.activated)[0]
     return theme ? theme.name : ''
   }
 
+  /**
+   * 激活主题。
+   * @param name 主题名。
+   */
   set theme(name: string) {
     this.changeTheme(name).catch((err) => {
       throw err
     })
   }
 
+  /**
+   * 获取主题名称列表。
+   */
   get themeList() {
     return themes.map((theme) => theme.name)
   }
 
   /**
-   * 切换主题
-   * @param name 主题名
+   * 激活主题。
+   * @param name 主题名。
    */
   changeTheme(name: string) {
     let theme: Theme | undefined

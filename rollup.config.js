@@ -60,9 +60,9 @@ function getPlugins(format, makeTypes) {
       exclude: 'tslib',
     }),
     typescript({
-      removeComments: !isEnvDevelopment,
+      removeComments: true,
       noUnusedLocals: !isEnvDevelopment,
-      target: format === 'es' ? 'esnext' : 'es5',
+      target: 'es2015',
     }),
     makeTypes && {
       name: 'make-types',
