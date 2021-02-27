@@ -6,8 +6,16 @@ const changeTheme = themeManager.changeTheme.bind(themeManager)
 
 const themeList: readonly string[] = themeManager.themeList
 
-function useTheme() {
-  const [theme, setTheme] = useState(themeManager.theme)
+function useTheme(initialTheme?: string | ((themes: string[]) => string)) {
+  const [theme, setTheme] = useState(() => {
+    let state = typeof initialTheme === 'function' ? initialTheme([...themeList]) : initialTheme
+    if (typeof state === 'string' && themeList.some((theme) => state === theme)) {
+      themeManager.theme = state
+    } else {
+      state = themeManager.theme
+    }
+    return state
+  })
   useEffect(() => {
     return themeManager.subscribe('change', ({ data: { current } }) => setTheme(current))
   })
