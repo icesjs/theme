@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { FC, useEffect, useMemo, useState } from 'react'
+import { FC, PropsWithChildren, useEffect, useMemo, useState } from 'react'
 import themeManager from '../index'
 
 const changeTheme = themeManager.changeTheme.bind(themeManager)
@@ -31,17 +31,16 @@ const ThemeContext = React.createContext({
   changeTheme,
 })
 
-type ThemeProviderProps = {
+type ThemeProviderProps = PropsWithChildren<{
   default?: string | ((themes: readonly string[]) => string)
-}
+}>
 
 const ThemeProvider: FC<ThemeProviderProps> = function (props) {
   const [theme, themeList, changeTheme] = useTheme(props.default)
-  const context = useMemo(() => ({ theme, themeList, changeTheme }), [
-    theme,
-    themeList,
-    changeTheme,
-  ])
+  const context = useMemo(
+    () => ({ theme, themeList, changeTheme }),
+    [theme, themeList, changeTheme]
+  )
   return <ThemeContext.Provider value={context}>{props.children}</ThemeContext.Provider>
 }
 

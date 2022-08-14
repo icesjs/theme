@@ -1,6 +1,6 @@
 {
   "name": "@ices/theme",
-  "version": "1.2.4",
+  "version": "2.0.0",
   "description": "A library for process themes",
   "main": "dist/index.cjs.js",
   "module": "dist/index.js",
@@ -12,13 +12,7 @@
     "types": "tsc -p . -d --declarationDir types --emitDeclarationOnly"
   },
   "peerDependencies": {
-    "@ices/theme-webpack-plugin": "^1.2.2",
-    "react": "^16.8.0"
-  },
-  "peerDependenciesMeta": {
-    "react": {
-      "optional": true
-    }
+    "react": ">=16.8.0"
   },
   "devDependencies": {
     "@rollup/plugin-typescript": "^8.1.1",
