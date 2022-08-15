@@ -1,6 +1,12 @@
 import * as React from 'react'
 import { FC, PropsWithChildren, useEffect, useMemo, useState } from 'react'
+
+// externals
 import themeManager from '../index'
+import generatedThemes from '../theme'
+
+// 主题将由构建插件动态创建
+themeManager.registerThemes(generatedThemes)
 
 const changeTheme = themeManager.changeTheme.bind(themeManager)
 

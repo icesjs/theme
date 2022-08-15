@@ -51,6 +51,15 @@ function makeTypesFile() {
   }
 }
 
+function rewriteExternalPath(id, externals, lib) {
+  for (const e of externals) {
+    if (id === path.resolve(`src/${e}`)) {
+      return path.relative(path.resolve(lib), path.resolve(`dist/${e}`)).replace(/\\/g, '/')
+    }
+  }
+  return id
+}
+
 function getPlugins(format, makeTypes) {
   return [
     externals({
@@ -76,7 +85,6 @@ makeFakeThemeFile()
 export default [
   {
     input,
-    external: ['./theme'],
     output: {
       file: pkg.module,
       format: 'es',
@@ -86,7 +94,6 @@ export default [
   },
   {
     input,
-    external: ['./theme'],
     output: {
       file: pkg.main,
       exports: 'auto',
@@ -97,15 +104,10 @@ export default [
   },
   {
     input: 'src/react/index.tsx',
-    external: ['../index'],
+    external: ['../index', '../theme'],
     output: {
       file: 'react/index.js',
-      paths: (id) => {
-        if (id === path.resolve('src/index')) {
-          return path.relative(path.resolve('react'), path.resolve(pkg.module)).replace(/\\/g, '/')
-        }
-        return id
-      },
+      paths: (id) => rewriteExternalPath(id, ['index', 'theme'], 'react'),
       format: 'es',
       sourcemap,
     },
@@ -113,15 +115,10 @@ export default [
   },
   {
     input: 'src/react/index.tsx',
-    external: ['../index'],
+    external: ['../index', '../theme'],
     output: {
       file: 'react/index.cjs.js',
-      paths: (id) => {
-        if (id === path.resolve('src/index')) {
-          return path.relative(path.resolve('react'), path.resolve(pkg.main)).replace(/\\/g, '/')
-        }
-        return id
-      },
+      paths: (id) => rewriteExternalPath(id, ['index', 'theme'], 'react'),
       exports: 'auto',
       format: 'cjs',
       sourcemap,

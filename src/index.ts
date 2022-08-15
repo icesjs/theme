@@ -1,5 +1,4 @@
 // theme模块由构建插件生成
-import themes from './theme'
 import ThemeEventManager, { ThemeLoadError } from './event'
 
 export {
@@ -19,10 +18,24 @@ export interface Theme {
 
 class ThemeManager extends ThemeEventManager {
   /**
+   * 已注册的主题列表。
+   * @private
+   */
+  private themes: Theme[] = []
+
+  /**
+   * 注册主题。主题文件在构建时动态生成。
+   * @param themes 主题集。
+   */
+  registerThemes(themes: Theme[]) {
+    this.themes = themes
+  }
+
+  /**
    * 获取当前已激活的主题名称。
    */
   get theme() {
-    const theme = themes.filter((theme) => theme.activated)[0]
+    const theme = this.themes.filter((theme) => theme.activated)[0]
     return theme ? theme.name : ''
   }
 
@@ -40,7 +53,7 @@ class ThemeManager extends ThemeEventManager {
    * 获取主题名称列表。
    */
   get themeList() {
-    return themes.map((theme) => theme.name)
+    return this.themes.map((theme) => theme.name)
   }
 
   /**
@@ -49,7 +62,7 @@ class ThemeManager extends ThemeEventManager {
    */
   changeTheme(name: string) {
     let theme: Theme | undefined
-    if (!name || !(theme = themes.filter((theme) => theme.name === name)[0])) {
+    if (!name || !(theme = this.themes.filter((theme) => theme.name === name)[0])) {
       return Promise.reject(new Error(`Unknown theme name '${name}'`))
     }
     const prevThemeName = this.theme
